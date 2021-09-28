@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                echo 'Building..'
+                echo 'Building from Git..'
                 echo "Running ${env.BUILD_ID} on ${env.JENKINS_URL}"
             }
         }
