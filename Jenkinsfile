@@ -1,22 +1,33 @@
 pipeline {
     agent any
-
     stages {
-        stage('Build') {
-            steps {
-                echo 'Building from Git..'
-                echo "Running ${env.BUILD_ID} on ${env.JENKINS_URL}"
-            }
-        }
-        stage('Test') {
-            steps {
-                echo 'Testing..'
-            }
-        }
-        stage('Deploy') {
-            steps {
-                echo 'Deploying....'
-            }
-        }
+    stage('Terraform Init') {
+      steps {
+        sh "terraform init -input=false"
+      }
     }
+    stage('Terraform Plan') {
+      steps {
+        sh "terraform plan"
+      }
+    }
+    stage('Terraform Dev') {
+      steps {
+        input 'Apply Plan'
+        sh "terraform apply -var-file='dev.tfvars' -auto-approve"
+      }
+    }
+    stage('Terraform Test') {
+      steps {
+        input 'Apply Plan'
+        sh "terraform apply -var-file='test.tfvars' -auto-approve"
+      }
+    }
+    stage('Terraform Prod') {
+      steps {
+        input 'Apply Plan'
+        sh "terraform apply -var-file='prod.tfvars' -auto-approve"
+      }
+    }
+  }
 }
